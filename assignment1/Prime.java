@@ -11,7 +11,7 @@ public class Prime {
         int n = input.nextInt();
         String output = String.format("The %dth prime is %d", n, countPrimes(n));
         System.out.println(output);
-
+        input.close();
     }
 
     
@@ -21,16 +21,19 @@ public class Prime {
             factors.add(2);
             int current = 3;
             while (factors.size()<n) {
-                char prime = 0;
                 if (!factors.contains(current)) {
                     for (int i: factors) {
-                        
+                        if (i == factors.get(factors.size()-1) && current % i != 0) {
+                            factors.add(current);
+                            break;
+                        }
+                        else if (current % i == 0) {
+                            break;
+                        }
                     }
+                    current++;
                 }
             }
-            
-
-
-
+            return factors.get(factors.size()-1);
     }
 }
