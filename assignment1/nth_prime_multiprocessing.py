@@ -24,7 +24,6 @@ def calc_n_primes_parallel(n):
             for res in results:
                 if res is not None:
                     factors.append(res)
-                    # Stop immediately if we have enough primes
                     if len(factors) == n:
                         return factors[-1]
             
