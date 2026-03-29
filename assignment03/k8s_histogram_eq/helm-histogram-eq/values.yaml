@@ -1,0 +1,20 @@
+master:
+  replicaCount: 1
+  image:
+    repository: ece465-histogram-master
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  service:
+    type: NodePort
+    httpPort: 8000
+    tcpPort: 6000
+
+worker:
+  replicaCount: 5
+  image:
+    repository: ece465-histogram-worker
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+storage:
+  size: 1Gi

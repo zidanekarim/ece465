@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helm-histogram-eq.fullname" . }}-master
+  labels:
+    app.kubernetes.io/name: {{ include "helm-histogram-eq.name" . }}-master
+spec:
+  replicas: {{ .Values.master.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "helm-histogram-eq.name" . }}-master
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "helm-histogram-eq.name" . }}-master
+    spec:
+      containers:
+        - name: master
+          image: "{{ .Values.master.image.repository }}:{{ .Values.master.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.master.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+            - name: tcp-coord
+              containerPort: 6000
+              protocol: TCP
+          volumeMounts:
+            - name: shared-data
+              mountPath: /app/shared_data
+      volumes:
+        - name: shared-data
+          persistentVolumeClaim:
+            claimName: {{ include "helm-histogram-eq.fullname" . }}-pvc

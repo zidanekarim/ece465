@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="HistogramApp">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cooper Union Distributed Histogram Equalizer</title>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.5/angular-material.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Local Premium UI CSS -->
+    <link rel="stylesheet" href="static/style.css?v=5">
+</head>
+
+<body ng-controller="MainController" ng-cloak>
+
+    <!-- Toolbar -->
+    <md-toolbar color="primary">
+        <div class="md-toolbar-tools">
+            <h2>
+                <span>Distributed Image Processor</span>
+            </h2>
+            <span flex></span>
+            <span ng-if="isLoggedIn">Welcome, {{username}}</span>
+            <md-button class="md-icon-button" aria-label="Logout" ng-if="isLoggedIn" ng-click="logout()">
+                <md-icon>logout</md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-content flex layout="column" layout-align="start center" class="main-content">
+
+        <!-- Login View -->
+        <md-card ng-if="!isLoggedIn" class="login-card">
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">System Login</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+                <form name="loginForm" ng-submit="login()">
+                    <md-input-container class="md-block">
+                        <label>Username</label>
+                        <input required ng-model="loginData.username" name="username">
+                    </md-input-container>
+                    <md-input-container class="md-block">
+                        <label>Password</label>
+                        <input required type="password" ng-model="loginData.password" name="password">
+                    </md-input-container>
+                    <md-button type="submit" class="md-raised md-primary" ng-disabled="loginForm.$invalid"
+                        style="width: 100%; margin: 0;">
+                        Login
+                    </md-button>
+                </form>
+            </md-card-content>
+        </md-card>
+
+        <!-- Main Dashboard View -->
+        <div ng-if="isLoggedIn" class="dashboard-container" layout="column" layout-align="start stretch">
+
+            <!-- Nodes Status & Logs Row -->
+            <div layout="row" flex style="margin-bottom: 24px;">
+                <!-- Cluster Status -->
+                <md-card flex="30" style="margin-right: 12px; margin-bottom: 0;">
+                    <md-card-content>
+                        <h3>Cluster Status</h3>
+                        <p>Active Worker Nodes:
+                            <span class="md-subhead" style="font-weight: 800;"
+                                ng-style="{'color': connectedNodes.length > 0 ? '#4caf50' : '#f44336'}">
+                                {{connectedNodes.length}}
+                            </span>
+                        </p>
+
+                        <div layout="row" layout-wrap style="margin-top: 16px;">
+                            <div class="node-badge" ng-repeat="node in connectedNodes">
+                                <md-icon
+                                    style="color: white; font-size: 18px; margin-right: 4px; height: 18px; width: 18px; min-height: 18px; min-width: 18px;">dns</md-icon>
+                                <span>{{node}}</span>
+                            </div>
+                            <p ng-if="connectedNodes.length === 0"
+                                style="color: #666; font-size: 0.9em; font-style: italic;">Awaiting Worker
+                                Registration...</p>
+                        </div>
+                    </md-card-content>
+                </md-card>
+
+                <!-- System Logs -->
+                <md-card flex="70" style="margin-left: 12px; margin-bottom: 0;">
+                    <md-card-content>
+                        <div layout="row" layout-align="space-between center">
+                            <h3 style="margin: 0; border: none;">Distributed System Logs</h3>
+                        </div>
+                        <div class="log-console" id="logConsole">
+                            <div ng-repeat="log in logs track by $index" class="log-entry">
+                                <span class="log-time">[{{log.time}}]</span>
+                                <span class="log-source">[{{log.source}}]</span>
+                                <span class="log-msg">{{log.message}}</span>
+                            </div>
+                            <div ng-if="logs.length === 0" style="color: #666; font-style: italic; padding: 10px;">
+                                No system logs generated yet...
+                            </div>
+                        </div>
+                    </md-card-content>
+                </md-card>
+            </div>
+
+            <!-- Upload Section -->
+            <md-card>
+                <md-card-content>
+                    <h3>Upload New Image (.jpg, .tiff)</h3>
+                    <form ng-submit="uploadFile()">
+                        <input type="file" file-model="upload.myFile" accept=".jpg,.jpeg,.tiff,.tif" required>
+                        <md-button class="md-raised md-primary" type="submit" ng-disabled="uploading">
+                            <md-icon style="margin-right: 8px;">cloud_upload</md-icon>
+                            {{uploading ? 'Uploading...' : 'Upload File'}}
+                        </md-button>
+                    </form>
+                </md-card-content>
+            </md-card>
+
+            <div layout="row" flex>
+                <!-- Available Images -->
+                <md-card flex="50" style="margin-right: 12px;">
+                    <md-card-content>
+                        <h3>Available Images</h3>
+                        <md-list>
+                            <md-list-item class="md-2-line" ng-repeat="file in availableFiles">
+                                <div class="md-list-item-text">
+                                    <h3>{{file.name}}</h3>
+                                    <p>{{file.size | number}} bytes</p>
+                                </div>
+                                <div layout="row">
+                                    <md-button class="md-raised md-accent" ng-click="processImage(file.name)"
+                                        ng-disabled="processingImages[file.name]">
+                                        <md-icon style="margin-right: 4px;">image</md-icon>
+                                        {{processingImages[file.name] ? 'Processing in Cluster...' : 'Equalize
+                                        Histogram'}}
+                                    </md-button>
+                                    <md-button class="md-icon-button md-warn" aria-label="Delete"
+                                        ng-click="deleteFile(file.name)">
+                                        <md-icon>delete</md-icon>
+                                    </md-button>
+                                </div>
+                            </md-list-item>
+                            <p ng-if="availableFiles.length === 0">No images uploaded yet.</p>
+                        </md-list>
+                    </md-card-content>
+                </md-card>
+
+                <!-- Processed Images -->
+                <md-card flex="50" style="margin-left: 12px;">
+                    <md-card-content>
+                        <div layout="row" layout-align="space-between center">
+                            <h3 style="margin: 0; border: none;">Processed Results</h3>
+                            <md-button class="md-icon-button md-primary" ng-click="refreshFiles()" aria-label="Refresh">
+                                <md-icon>refresh</md-icon>
+                            </md-button>
+                        </div>
+                        <md-list>
+                            <!-- Processing Placeholder -->
+                            <md-list-item class="md-2-line" ng-repeat="(filename, isProcessing) in processingImages"
+                                ng-if="isProcessing"
+                                style="background: rgba(255,179,0,0.05); border: 1px dashed rgba(255,179,0,0.5);">
+                                <div class="md-list-item-text">
+                                    <h3 style="color: #666; font-style: italic;">{{getEqualizedName(filename)}}</h3>
+                                </div>
+                                <div layout="row" layout-align="center center">
+                                    <md-progress-circular md-mode="indeterminate" md-diameter="24"
+                                        style="margin-right: 12px;"></md-progress-circular>
+                                    <span
+                                        style="font-size: 0.85em; color: #ff9800; font-weight: bold; padding-right: 8px;">Map-Reducing...</span>
+                                </div>
+                            </md-list-item>
+
+                            <!-- Completed Results -->
+                            <md-list-item class="md-2-line" ng-repeat="file in equalizedFiles">
+                                <div class="md-list-item-text">
+                                    <h3>{{file.name}}</h3>
+                                </div>
+                                <div layout="row">
+                                    <md-button class="md-icon-button md-primary" aria-label="Download"
+                                        ng-href="/download/{{file.name}}" download>
+                                        <md-icon>file_download</md-icon>
+                                    </md-button>
+                                    <md-button class="md-icon-button md-warn" aria-label="Delete"
+                                        ng-click="deleteProcessedFile(file.name)">
+                                        <md-icon>delete</md-icon>
+                                    </md-button>
+                                </div>
+                            </md-list-item>
+                            <p ng-if="equalizedFiles.length === 0 && !hasProcessingImages()">No results ready.</p>
+                        </md-list>
+                    </md-card-content>
+                </md-card>
+            </div>
+
+        </div>
+    </md-content>
+
+    <!-- Angular and Material scripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-messages.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.5/angular-material.min.js"></script>
+    <!-- App Script -->
+    <script src="static/app.js?v=5"></script>
+</body>
+
+</html>

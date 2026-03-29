@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helm-histogram-eq.fullname" . }}-worker
+  labels:
+    app.kubernetes.io/name: {{ include "helm-histogram-eq.name" . }}-worker
+spec:
+  replicas: {{ .Values.worker.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "helm-histogram-eq.name" . }}-worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "helm-histogram-eq.name" . }}-worker
+    spec:
+      containers:
+        - name: worker
+          image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+          env:
+            - name: MASTER_HOST
+              value: "{{ include "helm-histogram-eq.fullname" . }}-master-svc"
+            - name: MASTER_PORT
+              value: "{{ .Values.master.service.tcpPort }}"

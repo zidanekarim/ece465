@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway.Dockerfile
+    ports:
+      - "80:7676" 
+    networks:
+      - hist-net
+    depends_on:
+      - master
+
+  master:
+    build:
+      # Context is the parent folder so it can see BOTH 'master' and 'frontend'
+      context: ./k8s_histogram_eq
+      dockerfile: master/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./k8s_histogram_eq/shared_data:/app/shared_data
+    networks:
+      hist-net:
+        aliases:
+          - master-service
+
+  worker-1:
+    build:
+      # Context is just the worker folder
+      context: ./k8s_histogram_eq/worker
+      dockerfile: Dockerfile
+    environment:
+      - MASTER_HOST=master-service
+      - MASTER_PORT=6000
+    depends_on:
+      - master
+    networks:
+      - hist-net
+
+networks:
+  hist-net:

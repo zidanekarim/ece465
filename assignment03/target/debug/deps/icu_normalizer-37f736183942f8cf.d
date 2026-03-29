@@ -1,0 +1,10 @@
+/mnt/c/Users/zkari/OneDrive/Documents/School/ece465/assignment03/target/debug/deps/icu_normalizer-37f736183942f8cf.d: /home/thepotatopowers/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_normalizer-2.1.1/src/lib.rs /home/thepotatopowers/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_normalizer-2.1.1/src/properties.rs /home/thepotatopowers/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_normalizer-2.1.1/src/provider.rs /home/thepotatopowers/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_normalizer-2.1.1/src/uts46.rs
+
+/mnt/c/Users/zkari/OneDrive/Documents/School/ece465/assignment03/target/debug/deps/libicu_normalizer-37f736183942f8cf.rlib: /home/thepotatopowers/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_normalizer-2.1.1/src/lib.rs /home/thepotatopowers/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_normalizer-2.1.1/src/properties.rs /home/thepotatopowers/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_normalizer-2.1.1/src/provider.rs /home/thepotatopowers/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_normalizer-2.1.1/src/uts46.rs
+
+/mnt/c/Users/zkari/OneDrive/Documents/School/ece465/assignment03/target/debug/deps/libicu_normalizer-37f736183942f8cf.rmeta: /home/thepotatopowers/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_normalizer-2.1.1/src/lib.rs /home/thepotatopowers/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_normalizer-2.1.1/src/properties.rs /home/thepotatopowers/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_normalizer-2.1.1/src/provider.rs /home/thepotatopowers/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_normalizer-2.1.1/src/uts46.rs
+
+/home/thepotatopowers/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_normalizer-2.1.1/src/lib.rs:
+/home/thepotatopowers/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_normalizer-2.1.1/src/properties.rs:
+/home/thepotatopowers/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_normalizer-2.1.1/src/provider.rs:
+/home/thepotatopowers/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/icu_normalizer-2.1.1/src/uts46.rs:
